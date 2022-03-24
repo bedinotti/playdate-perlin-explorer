@@ -15,6 +15,10 @@ local gridTotalWidth = 150
 local grid = {}
 local isUsingPerlin = false
 
+for i=1, size, 1 do
+    grid[i] = {}
+end
+
 --- By convention, most games need to perform some initial setup when they're
 --- initially launched. Perform that setup here.
 ---
@@ -26,7 +30,6 @@ local function gameDidLaunch()
 
     gfx.setBackgroundColor(gfx.kColorBlack)
     gfx.fillRect(0, 0, 400, 240)
-
 end
 gameDidLaunch()
 
@@ -37,6 +40,12 @@ function playdate.update()
 
     if playdate.buttonJustPressed(playdate.kButtonA) then
         isUsingPerlin = not isUsingPerlin
+
+        if isUsingPerlin then
+            generatePerlinGrid()
+        else
+            generateMathRandomGrid()
+        end
         gfx.clear()
     end
 
@@ -70,7 +79,7 @@ function drawGrid()
 
     for row = 1, size, 1 do
         for col = 1, size, 1 do
-            local isWhiteFill = grid[geo.point.new(col, row)]
+            local isWhiteFill = grid[col][row]
             local rect = geo.rect.new(
                 start.x + (col - 1) * dx,
                 start.y + (row - 1) * dx,
@@ -90,6 +99,24 @@ function drawGrid()
                 gfx.drawRect(rect)
             end
             gfx.popContext()
+        end
+    end
+end
+
+function generateMathRandomGrid()
+    for row = 1, size, 1 do
+        for col = 1, size, 1 do
+            local value = math.random(0, 1)
+            grid[col][row] = (value == 0)
+        end
+    end
+end
+
+function generatePerlinGrid()
+    for row = 1, size, 1 do
+        for col = 1, size, 1 do
+            -- TODO; actually use perlin to make it random.
+            grid[col][row] = false
         end
     end
 end
