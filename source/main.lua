@@ -90,7 +90,7 @@ function drawGrid()
 
     for row = 1, size, 1 do
         for col = 1, size, 1 do
-            local isWhiteFill = grid[col][row]
+            local value = grid[col][row]
             local rect = geo.rect.new(
                 start.x + (col - 1) * dx,
                 start.y + (row - 1) * dx,
@@ -98,17 +98,16 @@ function drawGrid()
                 dx
             )
             gfx.pushContext()
-            if isWhiteFill then
+            -- if value > 0.5 then
                 gfx.setColor(gfx.kColorWhite)
+                gfx.setDitherPattern(value)
                 gfx.fillRect(rect)
-                gfx.setColor(gfx.kColorBlack)
+
+                gfx.setDitherPattern(0)
+                if value > 0.5 then
+                    gfx.setColor(gfx.kColorBlack)
+                end
                 gfx.drawRect(rect)
-            else
-                gfx.setColor(gfx.kColorBlack)
-                gfx.fillRect(rect)
-                gfx.setColor(gfx.kColorWhite)
-                gfx.drawRect(rect)
-            end
             gfx.popContext()
         end
     end
@@ -117,8 +116,8 @@ end
 function generateMathRandomGrid()
     for row = 1, size, 1 do
         for col = 1, size, 1 do
-            local value = math.random(0, 1)
-            grid[col][row] = (value == 0)
+            local value = math.random()
+            grid[col][row] = value
         end
     end
 end
@@ -127,7 +126,7 @@ function generatePerlinGrid()
     for row = 1, size, 1 do
         for col = 1, size, 1 do
             local value = gfx.perlin(col, row, 1, 0)
-            grid[col][row] = (value < 0.5)
+            grid[col][row] = value
         end
     end
 end
