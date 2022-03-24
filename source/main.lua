@@ -54,18 +54,8 @@ function playdate.update()
     if playdate.buttonJustPressed(playdate.kButtonA) then
         generationMethod += 1
         generationMethod = generationMethod % 3
-
-        if generationMethod == 0 then
-            generateMathRandomGrid()
-        elseif generationMethod == 1 then
-            generatePerlinGrid()
-        else
-            generatePerlinArrayGrid()
-        end
-        gfx.clear()
-
-        drawLabel()
-        drawGrid()
+        regenerateGrid()
+        drawEverything()
     end
 
     playdate.drawFPS(0,220)
@@ -79,6 +69,49 @@ function playdate.update()
     -- timers in your game.
     -- See https://sdk.play.date/1.9.3/#f-timer.updateTimers for more info
     playdate.timer.updateTimers()
+end
+
+function playdate.upButtonDown()
+    yDivisor -= 0.01
+    yDivisor = math.max(yDivisor, 0.05)
+    regenerateGrid()
+    drawEverything()
+end
+
+function playdate.downButtonDown()
+    yDivisor += 0.01
+    regenerateGrid()
+    drawEverything()
+end
+
+function playdate.leftButtonDown()
+    xDivisor -= 0.01
+    xDivisor = math.max(xDivisor, 0.05)
+    regenerateGrid()
+    drawEverything()
+end
+
+function playdate.rightButtonDown()
+    xDivisor += 0.01
+    regenerateGrid()
+    drawEverything()
+end
+
+function regenerateGrid()
+    if generationMethod == 0 then
+        generateMathRandomGrid()
+    elseif generationMethod == 1 then
+        generatePerlinGrid()
+    else
+        generatePerlinArrayGrid()
+    end
+end
+
+function drawEverything()
+    gfx.clear()
+
+    drawLabel()
+    drawGrid()
 end
 
 function drawLabel()
