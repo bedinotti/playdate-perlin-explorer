@@ -4,14 +4,15 @@ import "CoreLibs/graphics"
 import "CoreLibs/sprites"
 import "CoreLibs/timer"
 
--- Project imports
-import "button"
-import "crank"
-import "lifecycle"
-import "simulator"
 
 -- Use common shorthands for playdate code
 local gfx <const> = playdate.graphics
+
+-- variables
+local size = 10
+local gridTotalWidth = 150
+local grid = {}
+local isUsingPerlin = false
 
 --- By convention, most games need to perform some initial setup when they're
 --- initially launched. Perform that setup here.
@@ -23,14 +24,21 @@ local function gameDidLaunch()
     print(playdate.metadata.name .. " launched!")
 
     gfx.setBackgroundColor(gfx.kColorBlack)
+    gfx.fillRect(0, 0, 400, 240)
+
 end
 gameDidLaunch()
 
 --- This update method is called once per frame.
 function playdate.update()
-    -- Example code. Draw a full-screen rectangle and the frames per second
-    gfx.fillRect(0, 0, 400, 240)
-    playdate.drawFPS(0,0)
+    drawLabel()
+
+    if playdate.buttonJustPressed(playdate.kButtonA) then
+        isUsingPerlin = not isUsingPerlin
+        gfx.clear()
+    end
+
+    playdate.drawFPS(0,220)
 
     -- Update and draw all sprites. Calling this method in playdate.update
     -- is generally what you want, if you're using sprites.
@@ -41,4 +49,15 @@ function playdate.update()
     -- timers in your game.
     -- See https://sdk.play.date/1.9.3/#f-timer.updateTimers for more info
     playdate.timer.updateTimers()
+end
+
+function drawLabel()
+    gfx.pushContext()
+    gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+    if isUsingPerlin then
+        gfx.drawText("Perlin", 0, 0)
+    else
+        gfx.drawText("Math.random", 0, 0)
+    end
+    gfx.popContext()
 end
