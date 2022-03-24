@@ -7,6 +7,7 @@ import "CoreLibs/timer"
 
 -- Use common shorthands for playdate code
 local gfx <const> = playdate.graphics
+local geo <const> = playdate.geometry
 
 -- variables
 local size = 10
@@ -32,6 +33,7 @@ gameDidLaunch()
 --- This update method is called once per frame.
 function playdate.update()
     drawLabel()
+    drawGrid()
 
     if playdate.buttonJustPressed(playdate.kButtonA) then
         isUsingPerlin = not isUsingPerlin
@@ -60,4 +62,34 @@ function drawLabel()
         gfx.drawText("Math.random", 0, 0)
     end
     gfx.popContext()
+end
+
+function drawGrid()
+    local dx = gridTotalWidth / size
+    local start = { x = 20, y = 40 }
+
+    for row = 1, size, 1 do
+        for col = 1, size, 1 do
+            local isWhiteFill = grid[geo.point.new(col, row)]
+            local rect = geo.rect.new(
+                start.x + (col - 1) * dx,
+                start.y + (row - 1) * dx,
+                dx,
+                dx
+            )
+            gfx.pushContext()
+            if isWhiteFill then
+                gfx.setColor(gfx.kColorWhite)
+                gfx.fillRect(rect)
+                gfx.setColor(gfx.kColorBlack)
+                gfx.drawRect(rect)
+            else
+                gfx.setColor(gfx.kColorBlack)
+                gfx.fillRect(rect)
+                gfx.setColor(gfx.kColorWhite)
+                gfx.drawRect(rect)
+            end
+            gfx.popContext()
+        end
+    end
 end
