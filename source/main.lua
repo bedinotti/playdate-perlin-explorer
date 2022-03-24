@@ -13,7 +13,9 @@ local geo <const> = playdate.geometry
 local size = 10
 local gridTotalWidth = 150
 local grid = {}
-local isUsingPerlin = false
+
+-- random = 0, perlin = 1, perlinArray = 2
+local generationMethod = 0
 
 --- By convention, most games need to perform some initial setup when they're
 --- initially launched. Perform that setup here.
@@ -47,12 +49,15 @@ function playdate.update()
     end
 
     if playdate.buttonJustPressed(playdate.kButtonA) then
-        isUsingPerlin = not isUsingPerlin
+        generationMethod += 1
+        generationMethod = generationMethod % 3
 
-        if isUsingPerlin then
+        if generationMethod == 0 then
+            generateMathRandomGrid()
+        elseif generationMethod == 1 then
             generatePerlinGrid()
         else
-            generateMathRandomGrid()
+            generatePerlinArrayGrid()
         end
         gfx.clear()
 
@@ -76,10 +81,12 @@ end
 function drawLabel()
     gfx.pushContext()
     gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-    if isUsingPerlin then
-        gfx.drawText("Perlin", 0, 0)
-    else
+    if generationMethod == 0 then
         gfx.drawText("Math.random", 0, 0)
+    elseif generationMethod == 1 then
+        gfx.drawText("Perlin single values", 0, 0)
+    else
+        gfx.drawText("Perlin array", 0, 0)
     end
     gfx.popContext()
 end
@@ -128,5 +135,12 @@ function generatePerlinGrid()
             local value = gfx.perlin(col, row, 1, 0)
             grid[col][row] = value
         end
+    end
+end
+
+function generatePerlinArrayGrid()
+    for col = 1, size, 1 do
+        local colValues = gfx.perlinArray(size, col, 0, 1, 1)
+        grid[col] = colValues
     end
 end
