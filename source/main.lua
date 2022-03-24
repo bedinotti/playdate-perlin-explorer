@@ -126,8 +126,8 @@ end
 function generatePerlinGrid()
     for row = 1, size, 1 do
         for col = 1, size, 1 do
-            -- TODO; actually use perlin to make it random.
-            grid[col][row] = false
+            local value = gfx.perlin(col, row, 1, 0)
+            grid[col][row] = (value < 0.5)
         end
     end
 end
