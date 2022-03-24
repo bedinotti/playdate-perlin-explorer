@@ -14,6 +14,9 @@ local size = 10
 local gridTotalWidth = 150
 local grid = {}
 
+local xDivisor = 1.0
+local yDivisor = 1.0
+
 -- random = 0, perlin = 1, perlinArray = 2
 local generationMethod = 0
 
@@ -85,8 +88,12 @@ function drawLabel()
         gfx.drawText("Math.random", 0, 0)
     elseif generationMethod == 1 then
         gfx.drawText("Perlin single values", 0, 0)
+        gfx.drawText(string.format("x / %.2f", xDivisor), 240, 0)
+        gfx.drawText(string.format("y / %.2f", yDivisor), 240, 40)
     else
         gfx.drawText("Perlin array", 0, 0)
+        gfx.drawText(string.format("x / %.2f", xDivisor), 240, 0)
+        gfx.drawText(string.format("y / %.2f", yDivisor), 240, 40)
     end
     gfx.popContext()
 end
@@ -132,7 +139,7 @@ end
 function generatePerlinGrid()
     for row = 1, size, 1 do
         for col = 1, size, 1 do
-            local value = gfx.perlin(col, row, 1, 0)
+            local value = gfx.perlin(col / xDivisor, row / yDivisor, 1, 0)
             grid[col][row] = value
         end
     end
@@ -140,7 +147,7 @@ end
 
 function generatePerlinArrayGrid()
     for col = 1, size, 1 do
-        local colValues = gfx.perlinArray(size, col, 0, 1, 1)
+        local colValues = gfx.perlinArray(size, col / xDivisor, 0, 1, 1 / yDivisor)
         grid[col] = colValues
     end
 end
