@@ -15,10 +15,6 @@ local gridTotalWidth = 150
 local grid = {}
 local isUsingPerlin = false
 
-for i=1, size, 1 do
-    grid[i] = {}
-end
-
 --- By convention, most games need to perform some initial setup when they're
 --- initially launched. Perform that setup here.
 ---
@@ -35,8 +31,20 @@ gameDidLaunch()
 
 --- This update method is called once per frame.
 function playdate.update()
-    drawLabel()
-    drawGrid()
+    if #grid < size then
+        for i=1, size, 1 do
+            grid[i] = {}
+        end
+
+        if isUsingPerlin then
+            generatePerlinGrid()
+        else
+            generateMathRandomGrid()
+        end
+
+        drawLabel()
+        drawGrid()
+    end
 
     if playdate.buttonJustPressed(playdate.kButtonA) then
         isUsingPerlin = not isUsingPerlin
@@ -47,6 +55,9 @@ function playdate.update()
             generateMathRandomGrid()
         end
         gfx.clear()
+
+        drawLabel()
+        drawGrid()
     end
 
     playdate.drawFPS(0,220)
