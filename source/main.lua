@@ -3,7 +3,7 @@ import "CoreLibs/object"
 import "CoreLibs/graphics"
 import "CoreLibs/sprites"
 import "CoreLibs/timer"
-
+import "CoreLibs/ui"
 
 -- Use common shorthands for playdate code
 local gfx <const> = playdate.graphics
@@ -19,6 +19,25 @@ local xOffset = 0.5
 local yOffset = 0.5
 local xPosition = 0.0
 local yPosition = 0.0
+
+-- Options list view
+local optionList = playdate.ui.gridview.new(0, 25)
+optionList:setNumberOfRows(5)
+optionList:setCellPadding(0, 0, 13, 10)
+optionList:setContentInset(24, 24, 13, 11)
+
+function optionList:drawCell(section, row, column, selected, x, y, width, height)
+    gfx.setColor(gfx.kColorBlack)
+    gfx.fillRect(x, y, width, height)
+    gfx.setColor(gfx.kColorWhite)
+    if selected then
+        gfx.fillRoundRect(x, y, width, 20, 4)
+        gfx.setImageDrawMode(gfx.kDrawModeCopy)
+    else
+        gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+    end
+    gfx.drawTextInRect("option" .. row, x, y+2, width, height, nil, "...", kTextAlignment.center)
+end
 
 -- random = 0, perlin = 1, perlinArray = 2
 local generationMethod <const> = 1
@@ -49,6 +68,8 @@ function playdate.update()
         drawLabel()
         drawGrid()
     end
+
+    optionList:drawInRect(220, 0, 160, 240)
 --
 --     if playdate.buttonJustPressed(playdate.kButtonA) then
 --         generationMethod += 1
@@ -71,15 +92,17 @@ function playdate.update()
 end
 
 function playdate.upButtonDown()
-    yPosition -= 1
-    regenerateGrid()
-    drawEverything()
+    optionList:selectPreviousRow()
+        -- yPosition -= 1
+    -- regenerateGrid()
+    -- drawEverything()
 end
 
 function playdate.downButtonDown()
-    yPosition += 1
-    regenerateGrid()
-    drawEverything()
+    optionList:selectNextRow()
+    -- yPosition += 1
+    -- regenerateGrid()
+    -- drawEverything()
 end
 
 function playdate.leftButtonDown()
