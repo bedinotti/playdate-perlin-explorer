@@ -11,8 +11,8 @@ local geo <const> = playdate.geometry
 
 -- variables
 local grid = {}
-local gridTotalWidth <const> = playdate.display.getWidth() / 2 - 20
-local start <const> = { x = 15, y = 30 }
+local gridTotalWidth <const> = playdate.display.getWidth() / 2
+local start <const> = { x = 5, y = 30 }
 local isModfiyingVariables = false
 
 -- Configurable variables
@@ -98,15 +98,6 @@ function playdate.update()
         drawLabel()
         drawGrid()
     end
---
---     if playdate.buttonJustPressed(playdate.kButtonA) then
---         generationMethod += 1
---         generationMethod = generationMethod % 3
---         regenerateGrid()
---         drawEverything()
---     end
-
-    -- playdate.drawFPS(0,220)
 
     -- Update and draw all sprites. Calling this method in playdate.update
     -- is generally what you want, if you're using sprites.
@@ -120,17 +111,24 @@ function playdate.update()
 end
 
 function playdate.upButtonDown()
-    optionList:selectPreviousRow()
-        -- yPosition -= 1
-    -- regenerateGrid()
-    -- drawEverything()
+    if isModfiyingVariables then
+        optionList:selectPreviousRow()
+    else
+        yPosition -= 1
+        regenerateGrid()
+        drawEverything()
+    end
+
 end
 
 function playdate.downButtonDown()
-    optionList:selectNextRow()
-    -- yPosition += 1
-    -- regenerateGrid()
-    -- drawEverything()
+    if isModfiyingVariables then
+        optionList:selectNextRow()
+    else
+        yPosition += 1
+        regenerateGrid()
+        drawEverything()
+    end
 end
 
 function playdate.leftButtonDown()
@@ -165,17 +163,10 @@ end
 function drawLabel()
     gfx.pushContext()
     gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-    if generationMethod == 0 then
-        gfx.drawText("Math.random", 0, 0)
-    elseif generationMethod == 1 then
-        gfx.drawText("Perlin single values", 0, 0)
-        gfx.drawText(string.format("x = %.2f", xPosition), 240, 0)
-        gfx.drawText(string.format("y = %.2f", yPosition), 240, 40)
-    else
-        gfx.drawText("Perlin array", 0, 0)
-        gfx.drawText(string.format("x = %.2f", xPosition), 240, 0)
-        gfx.drawText(string.format("y = %.2f", yPosition), 240, 40)
-    end
+    local _, height = gfx.getTextSize("Perlin")
+    gfx.drawText("Perlin Noise explorer", 5, 5)
+    gfx.drawText(string.format("x = %.2f", xPosition + xOffset), 240, 5)
+    gfx.drawText(string.format("y = %.2f", yPosition + yOffset), 240, 5 + height)
     gfx.popContext()
 end
 
@@ -205,15 +196,6 @@ function drawGrid()
 end
 
 -- Grid generation
--- function generateMathRandomGrid()
---     for row = 1, size, 1 do
---         for col = 1, size, 1 do
---             local value = math.random()
---             grid[col][row] = value
---         end
---     end
--- end
-
 function generatePerlinGrid()
     for row = 1, size, 1 do
         for col = 1, size, 1 do
@@ -227,10 +209,3 @@ function generatePerlinGrid()
         end
     end
 end
-
--- function generatePerlinArrayGrid()
---     for col = 1, size, 1 do
---         local colValues = gfx.perlinArray(size, col / xOffset, 0, 1, 1 / yOffset)
---         grid[col] = colValues
---     end
--- end
