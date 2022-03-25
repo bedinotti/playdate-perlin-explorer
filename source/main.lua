@@ -13,6 +13,7 @@ local geo <const> = playdate.geometry
 local grid = {}
 local gridTotalWidth <const> = playdate.display.getWidth() / 2 - 20
 local start <const> = { x = 15, y = 30 }
+local isModfiyingVariables = false
 
 -- Configurable variables
 local size = 10
@@ -27,6 +28,7 @@ optionList:setNumberOfRows(5)
 optionList:setCellPadding(0, 0, 13, 10)
 optionList:setContentInset(24, 24, 13, 11)
 
+-- Add a background to the optionList, with a vertical line to the left
 local backgroundImage = gfx.image.new(
     playdate.display.getWidth() / 2,
     playdate.display.getHeight(),
@@ -39,8 +41,6 @@ gfx.unlockFocus()
 optionList.backgroundImage = backgroundImage
 
 function optionList:drawCell(section, row, column, selected, x, y, width, height)
-    gfx.setColor(gfx.kColorBlack)
-    gfx.fillRect(x, y, width, height)
     gfx.setColor(gfx.kColorWhite)
     if selected then
         gfx.fillRoundRect(x, y, width, 20, 4)
@@ -81,7 +81,23 @@ function playdate.update()
         drawGrid()
     end
 
-    optionList:drawInRect(220, 0, 160, 240)
+    if isModfiyingVariables then
+        optionList:drawInRect(220, 0, 160, 240)
+    end
+
+    -- Show the optionList when we're not modifying it and the user hits 🅰️
+    if not isModfiyingVariables and playdate.buttonJustPressed(playdate.kButtonA) then
+        isModfiyingVariables = true
+    end
+
+    -- If we are showing the option list and they hit 🅱️, dismiss it
+    if isModfiyingVariables and playdate.buttonJustPressed(playdate.kButtonB) then
+        isModfiyingVariables = false
+
+        gfx.clear()
+        drawLabel()
+        drawGrid()
+    end
 --
 --     if playdate.buttonJustPressed(playdate.kButtonA) then
 --         generationMethod += 1
