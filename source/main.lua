@@ -145,19 +145,16 @@ function drawGrid()
                 dx
             )
             gfx.pushContext()
-            -- if value > 0.5 then
-                gfx.setColor(gfx.kColorWhite)
-                gfx.setDitherPattern(value)
-                gfx.fillRect(rect)
-
-                gfx.setDitherPattern(0)
-                if value > 0.5 then
-                    gfx.setColor(gfx.kColorBlack)
-                end
-                gfx.drawRect(rect)
+            gfx.setColor(gfx.kColorWhite)
+            gfx.setDitherPattern(value)
+            gfx.fillRect(rect)
             gfx.popContext()
         end
     end
+    gfx.pushContext()
+    gfx.setColor(gfx.kColorWhite)
+    gfx.drawRect(start.x, start.y, gridTotalWidth, gridTotalWidth)
+    gfx.popContext()
 end
 
 function generateMathRandomGrid()
