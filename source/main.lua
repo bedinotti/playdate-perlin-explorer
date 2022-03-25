@@ -10,15 +10,18 @@ local gfx <const> = playdate.graphics
 local geo <const> = playdate.geometry
 
 -- variables
-local size = 10
-local gridTotalWidth = 150
 local grid = {}
+local gridTotalWidth <const> = 150
 
-local xDivisor = 1.0
-local yDivisor = 1.0
+-- Configurable variables
+local size = 10
+local xOffset = 0.5
+local yOffset = 0.5
+local xPosition = 0.0
+local yPosition = 0.0
 
 -- random = 0, perlin = 1, perlinArray = 2
-local generationMethod = 0
+local generationMethod <const> = 1
 
 --- By convention, most games need to perform some initial setup when they're
 --- initially launched. Perform that setup here.
@@ -41,22 +44,18 @@ function playdate.update()
             grid[i] = {}
         end
 
-        if isUsingPerlin then
-            generatePerlinGrid()
-        else
-            generateMathRandomGrid()
-        end
+        generatePerlinGrid()
 
         drawLabel()
         drawGrid()
     end
-
-    if playdate.buttonJustPressed(playdate.kButtonA) then
-        generationMethod += 1
-        generationMethod = generationMethod % 3
-        regenerateGrid()
-        drawEverything()
-    end
+--
+--     if playdate.buttonJustPressed(playdate.kButtonA) then
+--         generationMethod += 1
+--         generationMethod = generationMethod % 3
+--         regenerateGrid()
+--         drawEverything()
+--     end
 
     playdate.drawFPS(0,220)
 
@@ -72,27 +71,25 @@ function playdate.update()
 end
 
 function playdate.upButtonDown()
-    yDivisor -= 0.01
-    yDivisor = math.max(yDivisor, 0.05)
+    yPosition -= 1
     regenerateGrid()
     drawEverything()
 end
 
 function playdate.downButtonDown()
-    yDivisor += 0.01
+    yPosition += 1
     regenerateGrid()
     drawEverything()
 end
 
 function playdate.leftButtonDown()
-    xDivisor -= 0.01
-    xDivisor = math.max(xDivisor, 0.05)
+    xPosition -= 1
     regenerateGrid()
     drawEverything()
 end
 
 function playdate.rightButtonDown()
-    xDivisor += 0.01
+    xPosition += 1
     regenerateGrid()
     drawEverything()
 end
@@ -121,12 +118,12 @@ function drawLabel()
         gfx.drawText("Math.random", 0, 0)
     elseif generationMethod == 1 then
         gfx.drawText("Perlin single values", 0, 0)
-        gfx.drawText(string.format("x / %.2f", xDivisor), 240, 0)
-        gfx.drawText(string.format("y / %.2f", yDivisor), 240, 40)
+        gfx.drawText(string.format("x = %.2f", xPosition), 240, 0)
+        gfx.drawText(string.format("y = %.2f", yPosition), 240, 40)
     else
         gfx.drawText("Perlin array", 0, 0)
-        gfx.drawText(string.format("x / %.2f", xDivisor), 240, 0)
-        gfx.drawText(string.format("y / %.2f", yDivisor), 240, 40)
+        gfx.drawText(string.format("x = %.2f", xPosition), 240, 0)
+        gfx.drawText(string.format("y = %.2f", yPosition), 240, 40)
     end
     gfx.popContext()
 end
@@ -157,27 +154,33 @@ function drawGrid()
     gfx.popContext()
 end
 
-function generateMathRandomGrid()
-    for row = 1, size, 1 do
-        for col = 1, size, 1 do
-            local value = math.random()
-            grid[col][row] = value
-        end
-    end
-end
+-- Grid generation
+-- function generateMathRandomGrid()
+--     for row = 1, size, 1 do
+--         for col = 1, size, 1 do
+--             local value = math.random()
+--             grid[col][row] = value
+--         end
+--     end
+-- end
 
 function generatePerlinGrid()
     for row = 1, size, 1 do
         for col = 1, size, 1 do
-            local value = gfx.perlin(col / xDivisor, row / yDivisor, 1, 0)
+            local value = gfx.perlin(
+                (col - 1) + xOffset + xPosition,
+                (row - 1) + yOffset + yPosition,
+                1,
+                0
+            )
             grid[col][row] = value
         end
     end
 end
 
-function generatePerlinArrayGrid()
-    for col = 1, size, 1 do
-        local colValues = gfx.perlinArray(size, col / xDivisor, 0, 1, 1 / yDivisor)
-        grid[col] = colValues
-    end
-end
+-- function generatePerlinArrayGrid()
+--     for col = 1, size, 1 do
+--         local colValues = gfx.perlinArray(size, col / xOffset, 0, 1, 1 / yOffset)
+--         grid[col] = colValues
+--     end
+-- end
