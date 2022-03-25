@@ -11,7 +11,8 @@ local geo <const> = playdate.geometry
 
 -- variables
 local grid = {}
-local gridTotalWidth <const> = 150
+local gridTotalWidth <const> = playdate.display.getWidth() / 2 - 20
+local start <const> = { x = 15, y = 30 }
 
 -- Configurable variables
 local size = 10
@@ -25,6 +26,17 @@ local optionList = playdate.ui.gridview.new(0, 25)
 optionList:setNumberOfRows(5)
 optionList:setCellPadding(0, 0, 13, 10)
 optionList:setContentInset(24, 24, 13, 11)
+
+local backgroundImage = gfx.image.new(
+    playdate.display.getWidth() / 2,
+    playdate.display.getHeight(),
+    gfx.kColorBlack
+)
+gfx.lockFocus(backgroundImage)
+gfx.setColor(gfx.kColorWhite)
+gfx.drawLine(0, 0, 0, playdate.display.getHeight())
+gfx.unlockFocus()
+optionList.backgroundImage = backgroundImage
 
 function optionList:drawCell(section, row, column, selected, x, y, width, height)
     gfx.setColor(gfx.kColorBlack)
@@ -78,7 +90,7 @@ function playdate.update()
 --         drawEverything()
 --     end
 
-    playdate.drawFPS(0,220)
+    -- playdate.drawFPS(0,220)
 
     -- Update and draw all sprites. Calling this method in playdate.update
     -- is generally what you want, if you're using sprites.
@@ -153,7 +165,6 @@ end
 
 function drawGrid()
     local dx = gridTotalWidth / size
-    local start = { x = 20, y = 40 }
 
     for row = 1, size, 1 do
         for col = 1, size, 1 do
