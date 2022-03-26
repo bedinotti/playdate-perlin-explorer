@@ -25,8 +25,8 @@ local yPosition = 0.0
 -- Options list view
 local optionList = playdate.ui.gridview.new(0, 25)
 optionList:setNumberOfRows(5)
-optionList:setCellPadding(0, 0, 13, 10)
-optionList:setContentInset(24, 24, 13, 11)
+optionList:setCellPadding(0, 0, 5, 5)
+optionList:setContentInset(12, 12, 20, 20)
 
 -- Add a background to the optionList, with a vertical line to the left
 local backgroundImage = gfx.image.new(
@@ -41,14 +41,28 @@ gfx.unlockFocus()
 optionList.backgroundImage = backgroundImage
 
 function optionList:drawCell(section, row, column, selected, x, y, width, height)
+    local plusWidth, plusHeight = gfx.getTextSize("*+*")
+    local padding = 6
+    local textY = y + (height - plusHeight) / 2
     gfx.setColor(gfx.kColorWhite)
     if selected then
-        gfx.fillRoundRect(x, y, width, 20, 4)
+        gfx.fillRoundRect(x, y, width, height, 4)
         gfx.setImageDrawMode(gfx.kDrawModeCopy)
+        gfx.drawText("*+*", x + width - plusWidth - padding, textY)
+        gfx.drawText("*-*", x + padding, textY)
     else
         gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
     end
-    gfx.drawTextInRect("option" .. row, x, y+2, width, height, nil, "...", kTextAlignment.center)
+    gfx.drawTextInRect(
+        "optiosssssssssssssn" .. row,
+        x + plusWidth + 2*padding,
+        y+4,
+        width - 2*plusWidth - 4*padding,
+        height,
+        nil,
+        "...",
+        kTextAlignment.center
+    )
 end
 
 -- random = 0, perlin = 1, perlinArray = 2
@@ -80,7 +94,7 @@ function playdate.update()
     end
 
     if isModfiyingVariables then
-        optionList:drawInRect(220, 0, 160, 240)
+        optionList:drawInRect(220, 0, 180, 240)
     end
 
     -- Show the optionList when we're not modifying it and the user hits 🅰️
