@@ -341,7 +341,7 @@ function regenerateGridByArray()
             yPosition,
             1,
             z,
-            1,
+            0,
             repeatValue,
             octaves,
             persistence
