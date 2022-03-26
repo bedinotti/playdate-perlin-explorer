@@ -155,26 +155,32 @@ function playdate.downButtonDown()
 end
 
 function playdate.leftButtonDown()
-    if playdate.buttonIsPressed(playdate.kButtonB) then
-        xOffset -= 0.1
-        if xOffset < 0 then
-            xOffset += 1
-        end
+    if isModfiyingVariables then
     else
-        xPosition -= 1
+        if playdate.buttonIsPressed(playdate.kButtonB) then
+            xOffset -= 0.1
+            if xOffset < 0 then
+                xOffset += 1
+            end
+        else
+            xPosition -= 1
+        end
     end
     regenerateGrid()
     drawEverything()
 end
 
 function playdate.rightButtonDown()
-    if playdate.buttonIsPressed(playdate.kButtonB) then
-        xOffset += 0.1
-        if xOffset >= 1.0 then
-            xOffset -= 1
-        end
+    if isModfiyingVariables then
     else
-        xPosition += 1
+        if playdate.buttonIsPressed(playdate.kButtonB) then
+            xOffset += 0.1
+            if xOffset >= 1.0 then
+                xOffset -= 1
+            end
+        else
+            xPosition += 1
+        end
     end
     regenerateGrid()
     drawEverything()
