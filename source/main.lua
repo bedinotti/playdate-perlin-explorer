@@ -62,7 +62,7 @@ function optionList:drawCell(section, row, column, selected, x, y, width, height
     local label = generationKeys[row]
     local value = generationVariables[label]
     gfx.drawTextInRect(
-        string.format("%s = %.2f", label, value),
+        string.format("%s = %.1f", label, value),
         x + plusWidth + 2*padding,
         y+4,
         width - 2*plusWidth - 4*padding,
@@ -71,6 +71,33 @@ function optionList:drawCell(section, row, column, selected, x, y, width, height
         "...",
         kTextAlignment.center
     )
+end
+
+function optionList:increaseSelectedValue()
+    local key = generationKeys[self:getSelectedRow()]
+    if key == "size" then
+        generationVariables.size += 1
+    elseif key == "z" then
+        local amount = 1.0
+        if playdate.buttonIsPressed(playdate.kButtonB) then
+            amount = 0.1
+        end
+        generationVariables.z += amount
+    end
+end
+
+function optionList:decreaseSelectedValue()
+    local key = generationKeys[self:getSelectedRow()]
+    if key == "size" then
+        local newValue = math.max(1, generationVariables.size - 1)
+        generationVariables.size = newValue
+    elseif key == "z" then
+        local amount = 1.0
+        if playdate.buttonIsPressed(playdate.kButtonB) then
+            amount = 0.1
+        end
+        generationVariables.z -= amount
+    end
 end
 
 -- random = 0, perlin = 1, perlinArray = 2
@@ -164,6 +191,7 @@ end
 
 function playdate.leftButtonDown()
     if isModfiyingVariables then
+        optionList:decreaseSelectedValue()
     else
         if playdate.buttonIsPressed(playdate.kButtonB) then
             xOffset -= 0.1
@@ -180,6 +208,7 @@ end
 
 function playdate.rightButtonDown()
     if isModfiyingVariables then
+        optionList:increaseSelectedValue()
     else
         if playdate.buttonIsPressed(playdate.kButtonB) then
             xOffset += 0.1
@@ -256,6 +285,7 @@ function regenerateGrid()
                 1,
                 0
             )
+            grid[col] = grid[col] or {}
             grid[col][row] = value
         end
     end
