@@ -294,24 +294,14 @@ function regenerateGrid()
     local persistence = generationVariables.persistence
     for row = 1, size, 1 do
         for col = 1, size, 1 do
-            local value = 0
-            if octaves == nil or persistence == nil then
-                value = gfx.perlin(
-                    (col - 1) + xPosition,
-                    (row - 1) + yPosition,
-                    z,
-                    repeatValue
-                )
-            else
-                value = gfx.perlin(
-                    (col - 1) + xPosition,
-                    (row - 1) + yPosition,
-                    z,
-                    repeatValue,
-                    octaves,
-                    persistence
-                )
-            end
+            local value = gfx.perlin(
+                (col - 1) + xPosition,
+                (row - 1) + yPosition,
+                z,
+                repeatValue,
+                octaves,
+                persistence
+            )
             grid[col] = grid[col] or {}
             grid[col][row] = value
         end
