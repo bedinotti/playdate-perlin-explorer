@@ -132,14 +132,9 @@ function playdate.update()
         optionList:drawInRect(220, 0, 180, 240)
     end
 
-    -- Show the optionList when we're not modifying it and the user hits 🅰️
-    if not isModfiyingVariables and playdate.buttonJustPressed(playdate.kButtonA) then
-        isModfiyingVariables = true
-    end
-
-    -- If we are showing the option list and they hit 🅱️, dismiss it
-    if isModfiyingVariables and playdate.buttonJustPressed(playdate.kButtonB) then
-        isModfiyingVariables = false
+    -- Toggle the optionList when the user hits 🅰️
+    if playdate.buttonJustPressed(playdate.kButtonA) then
+        isModfiyingVariables = not isModfiyingVariables
         drawEverything()
     end
 
@@ -277,12 +272,13 @@ end
 -- Grid generation
 function regenerateGrid()
     local size = generationVariables.size
+    local z = generationVariables.z
     for row = 1, size, 1 do
         for col = 1, size, 1 do
             local value = gfx.perlin(
                 (col - 1) + xOffset + xPosition,
                 (row - 1) + yOffset + yPosition,
-                1,
+                z,
                 0
             )
             grid[col] = grid[col] or {}
