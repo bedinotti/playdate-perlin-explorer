@@ -336,12 +336,12 @@ function regenerateGridByArray()
     for col = 1, size, 1 do
         local column = gfx.perlinArray(
             size,
-            xPosition + col - 1,
-            1,
-            yPosition,
-            1,
-            z,
-            0,
+            xPosition + col - 1, -- x
+            0, -- dx
+            yPosition, -- y
+            1, -- dy
+            z, -- z
+            0, -- dz
             repeatValue,
             octaves,
             persistence
