@@ -75,7 +75,7 @@ function playdate.update()
             grid[i] = {}
         end
 
-        generatePerlinGrid()
+        regenerateGrid()
 
         drawLabel()
         drawGrid()
@@ -171,16 +171,6 @@ function playdate.rightButtonDown()
     drawEverything()
 end
 
-function regenerateGrid()
-    if generationMethod == 0 then
-        generateMathRandomGrid()
-    elseif generationMethod == 1 then
-        generatePerlinGrid()
-    else
-        generatePerlinArrayGrid()
-    end
-end
-
 function drawEverything()
     gfx.clear()
 
@@ -224,7 +214,7 @@ function drawGrid()
 end
 
 -- Grid generation
-function generatePerlinGrid()
+function regenerateGrid()
     for row = 1, size, 1 do
         for col = 1, size, 1 do
             local value = gfx.perlin(
