@@ -263,10 +263,14 @@ end
 function drawDetailColumn()
     local firstColumnX = 240
     local secondColumnX = firstColumnX + (400 - 240) / 2
+    local instructionX = 220
     gfx.pushContext()
     gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
     gfx.drawText(string.format("x = %.1f", xPosition), firstColumnX, 5)
     gfx.drawText(string.format("y = %.1f", yPosition), secondColumnX, 5)
+    gfx.drawText("✛ to move x, y", instructionX, 80)
+    gfx.drawText("Ⓑ+✛ to move slowly", instructionX, 110)
+    gfx.drawText("Ⓐ to toggle options", instructionX, 140)
     gfx.popContext()
 end
 
