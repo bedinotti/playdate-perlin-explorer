@@ -16,10 +16,8 @@ local start <const> = { x = 5, y = 30 }
 local isModfiyingVariables = false
 
 -- Motion variables. Controlled with ⬆️⬇️⬅️➡️
-local xOffset = 0.5
-local yOffset = 0.5
-local xPosition = 0.0
-local yPosition = 0.0
+local xPosition = 0.5
+local yPosition = 0.5
 
 -- Generation variables. Controlled in the options grid
 local generationKeys = { "size", "z", "repeatValue" } --, "octaves", "persistence"}
@@ -167,14 +165,11 @@ function playdate.upButtonDown()
     if isModfiyingVariables then
         optionList:selectPreviousRow()
     else
+        local amount = 1
         if playdate.buttonIsPressed(playdate.kButtonB) then
-            yOffset -= 0.1
-            if yOffset < 0 then
-                yOffset += 1
-            end
-        else
-            yPosition -= 1
+            amount = 0.1
         end
+        yPosition -= amount
         regenerateGrid()
         drawEverything()
     end
@@ -185,14 +180,11 @@ function playdate.downButtonDown()
     if isModfiyingVariables then
         optionList:selectNextRow()
     else
+        local amount = 1
         if playdate.buttonIsPressed(playdate.kButtonB) then
-            yOffset += 0.1
-            if yOffset >= 1.0 then
-                yOffset -= 1
-            end
-        else
-            yPosition += 1
+            amount = 0.1
         end
+        yPosition += amount
         regenerateGrid()
         drawEverything()
     end
@@ -202,14 +194,11 @@ function playdate.leftButtonDown()
     if isModfiyingVariables then
         optionList:decreaseSelectedValue()
     else
+        local amount = 1
         if playdate.buttonIsPressed(playdate.kButtonB) then
-            xOffset -= 0.1
-            if xOffset < 0 then
-                xOffset += 1
-            end
-        else
-            xPosition -= 1
+            amount = 0.1
         end
+        xPosition -= amount
     end
     regenerateGrid()
     drawEverything()
@@ -219,14 +208,11 @@ function playdate.rightButtonDown()
     if isModfiyingVariables then
         optionList:increaseSelectedValue()
     else
+        local amount = 1
         if playdate.buttonIsPressed(playdate.kButtonB) then
-            xOffset += 0.1
-            if xOffset >= 1.0 then
-                xOffset -= 1
-            end
-        else
-            xPosition += 1
+            amount = 0.1
         end
+        xPosition += amount
     end
     regenerateGrid()
     drawEverything()
@@ -252,8 +238,8 @@ function drawDetailColumn()
     local secondColumnX = firstColumnX + (400 - 240) / 2
     gfx.pushContext()
     gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-    gfx.drawText(string.format("x = %.2f", xPosition + xOffset), firstColumnX, 5)
-    gfx.drawText(string.format("y = %.2f", yPosition + yOffset), secondColumnX, 5)
+    gfx.drawText(string.format("x = %.1f", xPosition), firstColumnX, 5)
+    gfx.drawText(string.format("y = %.1f", yPosition), secondColumnX, 5)
     gfx.popContext()
 end
 
@@ -291,8 +277,8 @@ function regenerateGrid()
     for row = 1, size, 1 do
         for col = 1, size, 1 do
             local value = gfx.perlin(
-                (col - 1) + xOffset + xPosition,
-                (row - 1) + yOffset + yPosition,
+                (col - 1) + xPosition,
+                (row - 1) + yPosition,
                 z,
                 repeatValue
             )
