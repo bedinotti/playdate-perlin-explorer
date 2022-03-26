@@ -41,7 +41,7 @@ function variableDisplay(index)
         result = string.format("persist = %.2f", value)
     elseif label == "repeatValue" then
         -- This is special, because `repeat` is a Lua keyword
-        result = string.format("repeat = %.1f", value)
+        result = string.format("repeat = %d", value)
     end
     return result
 end
@@ -92,9 +92,9 @@ end
 
 function optionList:increaseSelectedValue()
     local key = generationKeys[self:getSelectedRow()]
-    if key == "size" or key == "octaves" then
+    if key == "size" or key == "octaves" or key == "repeatValue" then
         generationVariables[key] += 1
-    elseif key == "z" or key == "repeatValue" then
+    elseif key == "z" then
         local amount = 1.0
         if playdate.buttonIsPressed(playdate.kButtonB) then
             amount = 0.1
@@ -114,7 +114,9 @@ function optionList:decreaseSelectedValue()
     if key == "size" or key == "octaves" then
         local newValue = math.max(1, generationVariables[key] - 1)
         generationVariables[key] = newValue
-    elseif key == "z" or key == "repeatValue" then
+    elseif key == "repeatValue" then
+        generationVariables[key] -= 1
+    elseif key == "z" then
         local amount = 1.0
         if playdate.buttonIsPressed(playdate.kButtonB) then
             amount = 0.1
