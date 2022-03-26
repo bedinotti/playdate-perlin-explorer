@@ -20,22 +20,27 @@ local xPosition = 0.5
 local yPosition = 0.5
 
 -- Generation variables. Controlled in the options grid
-local generationKeys = { "size", "z", "repeatValue" } --, "octaves", "persistence"}
+local generationKeys = { "size", "z", "repeatValue", "octaves", "persistence"}
 local generationVariables = {
     size = 10,
     z = 0,
     repeatValue = 0,
+    octaves = 1,
+    persistence = 1.0
 }
 
 function variableDisplay(index)
     local label = generationKeys[index]
     local value = generationVariables[label]
     local result = "???"
-    if label == "size" then
-        result = string.format("size = %d", value)
+    if label == "size" or label == "octaves" then
+        result = string.format("%s = %d", label, value)
     elseif label == "z" then
         result = string.format("z = %.1f", value)
+    elseif label == "persistence" then
+        result = string.format("persist = %.2f", value)
     elseif label == "repeatValue" then
+        -- This is special, because `repeat` is a Lua keyword
         result = string.format("repeat = %.1f", value)
     end
     return result
@@ -87,12 +92,18 @@ end
 
 function optionList:increaseSelectedValue()
     local key = generationKeys[self:getSelectedRow()]
-    if key == "size" then
-        generationVariables.size += 1
+    if key == "size" or key == "octaves" then
+        generationVariables[key] += 1
     elseif key == "z" or key == "repeatValue" then
         local amount = 1.0
         if playdate.buttonIsPressed(playdate.kButtonB) then
             amount = 0.1
+        end
+        generationVariables[key] += amount
+    elseif key == "persistence" then
+        local amount = 0.1
+        if playdate.buttonIsPressed(playdate.kButtonB) then
+            amount = 0.01
         end
         generationVariables[key] += amount
     end
@@ -100,13 +111,19 @@ end
 
 function optionList:decreaseSelectedValue()
     local key = generationKeys[self:getSelectedRow()]
-    if key == "size" then
-        local newValue = math.max(1, generationVariables.size - 1)
-        generationVariables.size = newValue
+    if key == "size" or key == "octaves" then
+        local newValue = math.max(1, generationVariables[key] - 1)
+        generationVariables[key] = newValue
     elseif key == "z" or key == "repeatValue" then
         local amount = 1.0
         if playdate.buttonIsPressed(playdate.kButtonB) then
             amount = 0.1
+        end
+        generationVariables[key] -= amount
+    elseif key == "persistence" then
+        local amount = 0.1
+        if playdate.buttonIsPressed(playdate.kButtonB) then
+            amount = 0.01
         end
         generationVariables[key] -= amount
     end
@@ -274,14 +291,28 @@ function regenerateGrid()
     local size = generationVariables.size
     local z = generationVariables.z
     local repeatValue = generationVariables.repeatValue
+    local octaves = generationVariables.octaves
+    local persistence = generationVariables.persistence
     for row = 1, size, 1 do
         for col = 1, size, 1 do
-            local value = gfx.perlin(
-                (col - 1) + xPosition,
-                (row - 1) + yPosition,
-                z,
-                repeatValue
-            )
+            local value = 0
+            if octaves == nil or persistence == nil then
+                value = gfx.perlin(
+                    (col - 1) + xPosition,
+                    (row - 1) + yPosition,
+                    z,
+                    repeatValue
+                )
+            else
+                value = gfx.perlin(
+                    (col - 1) + xPosition,
+                    (row - 1) + yPosition,
+                    z,
+                    repeatValue,
+                    octaves,
+                    persistence
+                )
+            end
             grid[col] = grid[col] or {}
             grid[col][row] = value
         end
