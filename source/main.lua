@@ -76,9 +76,7 @@ function playdate.update()
         end
 
         regenerateGrid()
-
-        drawLabel()
-        drawGrid()
+        drawEverything()
     end
 
     if isModfiyingVariables then
@@ -93,10 +91,7 @@ function playdate.update()
     -- If we are showing the option list and they hit 🅱️, dismiss it
     if isModfiyingVariables and playdate.buttonJustPressed(playdate.kButtonB) then
         isModfiyingVariables = false
-
-        gfx.clear()
-        drawLabel()
-        drawGrid()
+        drawEverything()
     end
 
     -- Update and draw all sprites. Calling this method in playdate.update
@@ -174,17 +169,25 @@ end
 function drawEverything()
     gfx.clear()
 
-    drawLabel()
+    drawTitle()
+    drawDetailColumn()
     drawGrid()
 end
 
-function drawLabel()
+function drawTitle()
     gfx.pushContext()
     gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
-    local _, height = gfx.getTextSize("Perlin")
     gfx.drawText("Perlin Noise explorer", 5, 5)
-    gfx.drawText(string.format("x = %.2f", xPosition + xOffset), 240, 5)
-    gfx.drawText(string.format("y = %.2f", yPosition + yOffset), 240, 5 + height)
+    gfx.popContext()
+end
+
+function drawDetailColumn()
+    local firstColumnX = 240
+    local secondColumnX = firstColumnX + (400 - 240) / 2
+    gfx.pushContext()
+    gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
+    gfx.drawText(string.format("x = %.2f", xPosition + xOffset), firstColumnX, 5)
+    gfx.drawText(string.format("y = %.2f", yPosition + yOffset), secondColumnX, 5)
     gfx.popContext()
 end
 
