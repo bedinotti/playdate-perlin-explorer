@@ -15,16 +15,22 @@ local gridTotalWidth <const> = playdate.display.getWidth() / 2
 local start <const> = { x = 5, y = 30 }
 local isModfiyingVariables = false
 
--- Configurable variables
-local size = 10
+-- Motion variables. Controlled with ⬆️⬇️⬅️➡️
 local xOffset = 0.5
 local yOffset = 0.5
 local xPosition = 0.0
 local yPosition = 0.0
 
+-- Generation variables. Controlled in the options grid
+local generationKeys = { "size", "z" } -- , "repeat", "octaves", "persistence"}
+local generationVariables = {
+    size = 10,
+    z = 0,
+}
+
 -- Options list view
 local optionList = playdate.ui.gridview.new(0, 25)
-optionList:setNumberOfRows(5)
+optionList:setNumberOfRows(#generationKeys)
 optionList:setCellPadding(0, 0, 5, 5)
 optionList:setContentInset(12, 12, 20, 20)
 
@@ -53,8 +59,10 @@ function optionList:drawCell(section, row, column, selected, x, y, width, height
     else
         gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
     end
+    local label = generationKeys[row]
+    local value = generationVariables[label]
     gfx.drawTextInRect(
-        "optiosssssssssssssn" .. row,
+        string.format("%s = %.2f", label, value),
         x + plusWidth + 2*padding,
         y+4,
         width - 2*plusWidth - 4*padding,
@@ -84,8 +92,8 @@ gameDidLaunch()
 
 --- This update method is called once per frame.
 function playdate.update()
-    if #grid < size then
-        for i=1, size, 1 do
+    if #grid < generationVariables.size then
+        for i=1, generationVariables.size, 1 do
             grid[i] = {}
         end
 
@@ -212,6 +220,7 @@ function drawDetailColumn()
 end
 
 function drawGrid()
+    local size = generationVariables.size
     local dx = gridTotalWidth / size
 
     for row = 1, size, 1 do
@@ -238,6 +247,7 @@ end
 
 -- Grid generation
 function regenerateGrid()
+    local size = generationVariables.size
     for row = 1, size, 1 do
         for col = 1, size, 1 do
             local value = gfx.perlin(
