@@ -22,11 +22,27 @@ local xPosition = 0.0
 local yPosition = 0.0
 
 -- Generation variables. Controlled in the options grid
-local generationKeys = { "size", "z" } -- , "repeat", "octaves", "persistence"}
+local generationKeys = { "size", "z", "repeatValue" } --, "octaves", "persistence"}
 local generationVariables = {
     size = 10,
     z = 0,
+    repeatValue = 0,
 }
+
+function variableDisplay(index)
+    local label = generationKeys[index]
+    local value = generationVariables[label]
+    local result = "???"
+    if label == "size" then
+        result = string.format("size = %d", value)
+    elseif label == "z" then
+        result = string.format("z = %.1f", value)
+    elseif label == "repeatValue" then
+        result = string.format("repeat = %.1f", value)
+    end
+    return result
+end
+
 
 -- Options list view
 local optionList = playdate.ui.gridview.new(0, 25)
@@ -59,10 +75,8 @@ function optionList:drawCell(section, row, column, selected, x, y, width, height
     else
         gfx.setImageDrawMode(gfx.kDrawModeFillWhite)
     end
-    local label = generationKeys[row]
-    local value = generationVariables[label]
     gfx.drawTextInRect(
-        string.format("%s = %.1f", label, value),
+        variableDisplay(row),
         x + plusWidth + 2*padding,
         y+4,
         width - 2*plusWidth - 4*padding,
@@ -77,12 +91,12 @@ function optionList:increaseSelectedValue()
     local key = generationKeys[self:getSelectedRow()]
     if key == "size" then
         generationVariables.size += 1
-    elseif key == "z" then
+    elseif key == "z" or key == "repeatValue" then
         local amount = 1.0
         if playdate.buttonIsPressed(playdate.kButtonB) then
             amount = 0.1
         end
-        generationVariables.z += amount
+        generationVariables[key] += amount
     end
 end
 
@@ -91,12 +105,12 @@ function optionList:decreaseSelectedValue()
     if key == "size" then
         local newValue = math.max(1, generationVariables.size - 1)
         generationVariables.size = newValue
-    elseif key == "z" then
+    elseif key == "z" or key == "repeatValue" then
         local amount = 1.0
         if playdate.buttonIsPressed(playdate.kButtonB) then
             amount = 0.1
         end
-        generationVariables.z -= amount
+        generationVariables[key] -= amount
     end
 end
 
@@ -273,13 +287,14 @@ end
 function regenerateGrid()
     local size = generationVariables.size
     local z = generationVariables.z
+    local repeatValue = generationVariables.repeatValue
     for row = 1, size, 1 do
         for col = 1, size, 1 do
             local value = gfx.perlin(
                 (col - 1) + xOffset + xPosition,
                 (row - 1) + yOffset + yPosition,
                 z,
-                0
+                repeatValue
             )
             grid[col] = grid[col] or {}
             grid[col][row] = value
