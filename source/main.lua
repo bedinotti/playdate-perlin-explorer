@@ -20,13 +20,14 @@ local xPosition = 0.5
 local yPosition = 0.5
 
 -- Generation variables. Controlled in the options grid
-local generationKeys = { "size", "z", "repeatValue", "octaves", "persistence"}
+local generationKeys = { "size", "z", "repeatValue", "octaves", "persistence", "isArray"}
 local generationVariables = {
     size = 10,
     z = 0,
     repeatValue = 0,
     octaves = 1,
-    persistence = 1.0
+    persistence = 1.0,
+    isArray = false
 }
 
 function variableDisplay(index)
@@ -42,6 +43,12 @@ function variableDisplay(index)
     elseif label == "repeatValue" then
         -- This is special, because `repeat` is a Lua keyword
         result = string.format("repeat = %d", value)
+    elseif label == "isArray" then
+        if generationVariables.isArray then
+            result = ".perlinArray(...)"
+        else
+            result = ".perlin(...)"
+        end
     end
     return result
 end
@@ -106,6 +113,8 @@ function optionList:increaseSelectedValue()
             amount = 0.01
         end
         generationVariables[key] += amount
+    elseif key == "isArray" then
+        generationVariables[key] = not generationVariables[key]
     end
 end
 
@@ -128,6 +137,8 @@ function optionList:decreaseSelectedValue()
             amount = 0.01
         end
         generationVariables[key] -= amount
+    elseif key == "isArray" then
+        generationVariables[key] = not generationVariables[key]
     end
 end
 
@@ -287,6 +298,14 @@ end
 
 -- Grid generation
 function regenerateGrid()
+    if generationVariables.isArray then
+        regenerateGridByArray()
+    else
+        regenerateGridBySingleValue()
+    end
+end
+
+function regenerateGridBySingleValue()
     local size = generationVariables.size
     local z = generationVariables.z
     local repeatValue = generationVariables.repeatValue
@@ -307,3 +326,27 @@ function regenerateGrid()
         end
     end
 end
+
+function regenerateGridByArray()
+    local size = generationVariables.size
+    local z = generationVariables.z
+    local repeatValue = generationVariables.repeatValue
+    local octaves = generationVariables.octaves
+    local persistence = generationVariables.persistence
+    for col = 1, size, 1 do
+        local column = gfx.perlinArray(
+            size,
+            xPosition + col - 1,
+            1,
+            yPosition,
+            1,
+            z,
+            1,
+            repeatValue,
+            octaves,
+            persistence
+        )
+        grid[col] = column
+    end
+end
+
