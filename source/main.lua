@@ -114,7 +114,14 @@ function playdate.upButtonDown()
     if isModfiyingVariables then
         optionList:selectPreviousRow()
     else
-        yPosition -= 1
+        if playdate.buttonIsPressed(playdate.kButtonB) then
+            yOffset -= 0.1
+            if yOffset < 0 then
+                yOffset += 1
+            end
+        else
+            yPosition -= 1
+        end
         regenerateGrid()
         drawEverything()
     end
@@ -125,20 +132,41 @@ function playdate.downButtonDown()
     if isModfiyingVariables then
         optionList:selectNextRow()
     else
-        yPosition += 1
+        if playdate.buttonIsPressed(playdate.kButtonB) then
+            yOffset += 0.1
+            if yOffset >= 1.0 then
+                yOffset -= 1
+            end
+        else
+            yPosition += 1
+        end
         regenerateGrid()
         drawEverything()
     end
 end
 
 function playdate.leftButtonDown()
-    xPosition -= 1
+    if playdate.buttonIsPressed(playdate.kButtonB) then
+        xOffset -= 0.1
+        if xOffset < 0 then
+            xOffset += 1
+        end
+    else
+        xPosition -= 1
+    end
     regenerateGrid()
     drawEverything()
 end
 
 function playdate.rightButtonDown()
-    xPosition += 1
+    if playdate.buttonIsPressed(playdate.kButtonB) then
+        xOffset += 0.1
+        if xOffset >= 1.0 then
+            xOffset -= 1
+        end
+    else
+        xPosition += 1
+    end
     regenerateGrid()
     drawEverything()
 end
