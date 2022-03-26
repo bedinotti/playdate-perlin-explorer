@@ -131,9 +131,6 @@ function optionList:decreaseSelectedValue()
     end
 end
 
--- random = 0, perlin = 1, perlinArray = 2
-local generationMethod <const> = 1
-
 --- By convention, most games need to perform some initial setup when they're
 --- initially launched. Perform that setup here.
 ---
